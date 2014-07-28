@@ -109,6 +109,13 @@ post '/status/update' do
       if status_changed
         # Send notifications
         #        count = Person.where(:status => 'In').where{version >= MINIMUM_VERSION}.count
+
+        change = StatusChange.new
+        change.person = person
+        change.date = DateTime.now
+        change.status = params[:status]
+        change.save
+
         count = Person.where(:status => 'In').count
 
         recipient_ids = []
@@ -138,7 +145,6 @@ post '/status/update' do
     person.version = agent_version
     person.date = DateTime.now
     person.save or {"result" => STATUS_ERROR, "reason" => "The record could not be saved"}.to_json
-
 
     puts "STATUS UPDATE: #{person.name.capitalize!} is #{params[:status]}"
   end

@@ -20,3 +20,8 @@ class Message < Sequel::Model
     super.iso8601
   end
 end
+
+
+class StatusChange < Sequel::Model
+  many_to_one :person
+end

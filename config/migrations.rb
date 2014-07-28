@@ -44,3 +44,12 @@ migration "create messages table" do
     Integer     :person_id
   end
 end
+
+migration "create status changes" do
+  DB.create_table :status_changes do
+    primary_key :id
+    Integer :person_id
+    String :status
+    DateTime :date
+  end
+end
