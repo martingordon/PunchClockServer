@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'sinatra/sequel'
 require 'sequel'
-require 'zero_push'
+require 'parse-ruby-client'
 
 configure do
   Sequel::Model.plugin :json_serializer
@@ -15,11 +15,13 @@ use Rack::Auth::Basic do |username, password|
 end
 
 configure :production do
-  ZeroPush.auth_token = ENV["ZEROPUSH_PROD_TOKEN"]
+  Parse.init  application_id: ENV["PARSE_PROD_APP_ID"],
+              api_key:        ENV["PARSE_PROD_API_KEY"]
 end
 
 configure :development do
   require 'logger'
   DB.logger = Logger.new($stdout)
-  ZeroPush.auth_token = ENV["ZEROPUSH_DEV_TOKEN"]
+  Parse.init  application_id: ENV["PARSE_DEV_APP_ID"],
+              api_key:        ENV["PARSE_DEV_API_KEY"]
 end

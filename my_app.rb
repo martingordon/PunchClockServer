@@ -119,14 +119,14 @@ post '/status/update' do
           end
         end
 
-        if recipient_ids.count > 0
-          ZeroPush.notify({
-            device_tokens: recipient_ids,
-            alert: "#{person.name.capitalize!} is #{params[:status]}",
+        recipient_ids.each do |id|
+          push = Parse::Push.new({
+            alert: "#{sender.name.capitalize!} is #{params[:status]}",
             sound: "status.caf",
-            badge: "",
-            info: ""
+            badge: ""
           })
+          push.where = { "deviceToken" => id }
+          push.save
         end
       end
     end
@@ -171,14 +171,14 @@ post '/message/in' do
     end
   end
 
-  if recipient_ids.count > 0
-    ZeroPush.notify({
-      device_tokens: recipient_ids,
+  recipient_ids.each do |id|
+    push = Parse::Push.new({
       alert: "#{sender.name.capitalize!}: #{params[:message]}",
-      sound: "message.caf",
-      badge: "",
-      info: ""
+      sound: "status.caf",
+      badge: ""
     })
+    push.where = { "deviceToken" => id }
+    push.save
   end
 
   {"result" => STATUS_OK}.to_json
