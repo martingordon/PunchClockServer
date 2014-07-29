@@ -201,7 +201,6 @@ get '/ins/:name.xml' do
   sender = Person.first(:name => lowName)
 
   RSS::Rss::NSPOOL.delete("content")
-  RSS::Rss::NSPOOL.delete("dc")
   RSS::Rss::NSPOOL.delete("trackback")
   RSS::Rss::NSPOOL.delete("itunes")
 
@@ -241,7 +240,6 @@ get '/outs/:name.xml' do
   sender = Person.first(:name => lowName)
 
   RSS::Rss::NSPOOL.delete("content")
-  RSS::Rss::NSPOOL.delete("dc")
   RSS::Rss::NSPOOL.delete("trackback")
   RSS::Rss::NSPOOL.delete("itunes")
 
