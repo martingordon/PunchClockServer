@@ -8,7 +8,7 @@ Setup
 
 Let's assume you've gone through the basic [heroku setup steps](https://devcenter.heroku.com/articles/quickstart) and are ready to deploy an application.
 
-The server is designed to run with a [Postgres](https://devcenter.heroku.com/articles/heroku-postgresql) database and the [ZeroPush](https://devcenter.heroku.com/articles/zeropush) notification service. To get it running for testing you'll need to install some ruby gems and customzie your local enviroment.
+The server is designed to run with a [Postgres](https://devcenter.heroku.com/articles/heroku-postgresql) database and the [Parse](http://parse.com)'s push notification service. To get it running for testing you'll need to install some Ruby gems and customize your local enviroment.
 
 - `$ cp dotenv.sample .env`
 - `$ gem install bundler; bundle install`
