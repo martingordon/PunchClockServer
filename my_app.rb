@@ -14,6 +14,13 @@ STATUS_ALREADY_WATCHED = 3
 
 MINIMUM_VERSION = 73
 
+class String
+  def titleize
+    arr = self.split(" ")
+    arr.each { |w| w.capitalize! }.join(" ")
+  end
+end
+
 helpers do
   def slack_webhook_uri
     URI.join(ENV['SLACK_URL'], "services/hooks/incoming-webhook?token=#{ENV['SLACK_TOKEN']}")
@@ -94,9 +101,7 @@ post '/status/update' do
   output = ""
 
   DB.transaction do
-
     lowName = params[:name].downcase
-    lowName = 'steven' if lowName == 'stevenf'
 
     person = Person.for_update.first(:name => lowName)
 
@@ -130,7 +135,7 @@ post '/status/update' do
 
         recipient_ids.each do |id|
           push = Parse::Push.new({
-            alert: "#{sender.name.capitalize!} is #{params[:status]}",
+            alert: "#{sender.name.titleize} is #{params[:status]}",
             sound: "status.caf",
             badge: ""
           })
@@ -148,7 +153,7 @@ post '/status/update' do
     person.date = DateTime.now
     person.save or {"result" => STATUS_ERROR, "reason" => "The record could not be saved"}.to_json
 
-    puts "STATUS UPDATE: #{person.name.capitalize!} is #{params[:status]}"
+    puts "STATUS UPDATE: #{person.name.titleize} is #{params[:status]}"
   end
 
 
@@ -181,7 +186,7 @@ post '/message/in' do
 
   recipient_ids.each do |id|
     push = Parse::Push.new({
-      alert: "#{sender.name.capitalize!}: #{params[:message]}",
+      alert: "#{sender.name.titleize}: #{params[:message]}",
       sound: "status.caf",
       badge: ""
     })
@@ -205,12 +210,12 @@ get '/ins/:name.xml' do
   RSS::Rss::NSPOOL.delete("itunes")
 
   rss = RSS::Maker.make("2.0") do |maker|
-    maker.channel.author = "Custora"
-    # maker.channel.updated = Time.now.to_s
-    maker.channel.about = "http://custora-punch-clock-server.herokuapp.com"
-    maker.channel.title = "Arrival Feed for #{sender.name}"
-    maker.channel.link = "http://custora-punch-clock-server.herokuapp.com"
-    maker.channel.description = "Arrival Feed for #{sender.name}"
+    maker.channel.title = "Arrival Feed for #{sender.name.titleize}"
+    maker.channel.description = "Arrival Feed for #{sender.name.titleize}"
+
+    maker.channel.author = ENV["RSS_AUTHOR"]
+    maker.channel.about = ENV["RSS_ABOUT"]
+    maker.channel.link = ENV["RSS_LINK"]
 
     ins = sender.ins_dataset.reverse_order(:date)
 
@@ -224,6 +229,7 @@ get '/ins/:name.xml' do
       maker.items.new_item do |item|
         item.title = in_status.status
         item.updated = in_status.date
+        item.link = ENV["RSS_LINK"]
       end
     end
   end
@@ -244,12 +250,12 @@ get '/outs/:name.xml' do
   RSS::Rss::NSPOOL.delete("itunes")
 
   rss = RSS::Maker.make("2.0") do |maker|
-    maker.channel.author = "Custora"
-    # maker.channel.updated = Time.now.to_s
-    maker.channel.about = "http://custora-punch-clock-server.herokuapp.com"
-    maker.channel.title = "Departure Feed for #{sender.name}"
-    maker.channel.link = "http://custora-punch-clock-server.herokuapp.com"
-    maker.channel.description = "Departure Feed for #{sender.name}"
+    maker.channel.title = "Arrival Feed for #{sender.name.titleize}"
+    maker.channel.description = "Arrival Feed for #{sender.name.titleize}"
+
+    maker.channel.author = ENV["RSS_AUTHOR"]
+    maker.channel.about = ENV["RSS_ABOUT"]
+    maker.channel.link = ENV["RSS_LINK"]
 
     outs = sender.outs_dataset.reverse_order(:date)
 
@@ -263,6 +269,7 @@ get '/outs/:name.xml' do
       maker.items.new_item do |item|
         item.title = in_status.status
         item.updated = in_status.date
+        item.link = ENV["RSS_LINK"]
       end
     end
   end
