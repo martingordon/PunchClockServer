@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
+require 'rss'
+
 require 'pp' if ENV['RACK_ENV'] == 'development'
 
 require './config/init.rb'
@@ -188,6 +190,90 @@ post '/message/in' do
   end
 
   {"result" => STATUS_OK}.to_json
+end
+
+get '/ins/:name.xml' do
+  require_params :name
+  content_type :xml
+
+  lowName = params[:name].downcase
+
+  sender = Person.first(:name => lowName)
+
+  RSS::Rss::NSPOOL.delete("content")
+  RSS::Rss::NSPOOL.delete("dc")
+  RSS::Rss::NSPOOL.delete("trackback")
+  RSS::Rss::NSPOOL.delete("itunes")
+
+  rss = RSS::Maker.make("2.0") do |maker|
+    maker.channel.author = "Custora"
+    # maker.channel.updated = Time.now.to_s
+    maker.channel.about = "http://custora-punch-clock-server.herokuapp.com"
+    maker.channel.title = "Arrival Feed for #{sender.name}"
+    maker.channel.link = "http://custora-punch-clock-server.herokuapp.com"
+    maker.channel.description = "Arrival Feed for #{sender.name}"
+
+    ins = sender.ins_dataset.reverse_order(:date)
+
+    if !params[:before].nil? or params[:before] == ""
+      before = params[:before].to_i
+      ins = sender.ins_dataset.where { Sequel.function(:date_part, "hour", date) <= before }.reverse_order(:date)
+    end
+
+    in_block = ->(in_status) {
+      maker.items.new_item do |item|
+        item.title = in_status.status
+        item.updated = in_status.date
+      end
+    }
+
+    maker.channel.updated = ins.first.nil? ? nil : ins.first.date
+    ins.each(&:in_block)
+  end
+
+  rss.to_s
+end
+
+get '/outs/:name.xml' do
+  require_params :name
+  content_type :xml
+
+  lowName = params[:name].downcase
+
+  sender = Person.first(:name => lowName)
+
+  RSS::Rss::NSPOOL.delete("content")
+  RSS::Rss::NSPOOL.delete("dc")
+  RSS::Rss::NSPOOL.delete("trackback")
+  RSS::Rss::NSPOOL.delete("itunes")
+
+  rss = RSS::Maker.make("2.0") do |maker|
+    maker.channel.author = "Custora"
+    # maker.channel.updated = Time.now.to_s
+    maker.channel.about = "http://custora-punch-clock-server.herokuapp.com"
+    maker.channel.title = "Departure Feed for #{sender.name}"
+    maker.channel.link = "http://custora-punch-clock-server.herokuapp.com"
+    maker.channel.description = "Departure Feed for #{sender.name}"
+
+    outs = sender.outs_dataset.reverse_order(:date)
+
+    if !params[:after].nil? or params[:after] == ""
+      after = params[:after].to_i
+      outs = sender.outs_dataset.where { Sequel.function(:date_part, "hour", date) >= after }.reverse_order(:date)
+    end
+
+    in_block = ->(in_status) {
+      maker.items.new_item do |item|
+        item.title = in_status.status
+        item.updated = in_status.date
+      end
+    }
+
+    maker.channel.updated = outs.first.nil? ? nil : outs.first.date
+    outs.each(&:in_block)
+  end
+
+  rss.to_s
 end
 
 get '/messages' do

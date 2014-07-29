@@ -2,6 +2,19 @@ class Person < Sequel::Model
   many_to_many :watchers, :class => :Person
   many_to_many :watches, :class => :Person, :right_key => :person_id, :left_key => :watcher_id
 
+  one_to_many :status_changes
+  one_to_many :ins, class: :StatusChange do |ds|
+    ds.where(status: "In")
+  end
+
+  one_to_many :nears, class: :StatusChange do |ds|
+    ds.where(status: "Near")
+  end
+
+  one_to_many :outs, class: :StatusChange do |ds|
+    ds.where(status: "Out")
+  end
+
   def watched_by_name(watcher_name)
     filtered_watchers = self.watchers.select {|w| w.name == watcher_name}
     return filtered_watchers.count == 1
@@ -20,7 +33,6 @@ class Message < Sequel::Model
     super.iso8601
   end
 end
-
 
 class StatusChange < Sequel::Model
   many_to_one :person
