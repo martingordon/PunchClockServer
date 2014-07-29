@@ -14,3 +14,5 @@ gem 'pg'
 
 gem 'parse-ruby-client'
 gem 'foreman'
+
+gem 'tzinfo'
