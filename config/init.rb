@@ -10,10 +10,6 @@ configure do
   require './config/data'
 end
 
-use Rack::Auth::Basic do |username, password|
-  username == ENV['AUTH_USER'] && password == ENV['AUTH_PASSWORD']
-end
-
 configure :production do
   Parse.init  application_id: ENV["PARSE_PROD_APP_ID"],
               api_key:        ENV["PARSE_PROD_API_KEY"]

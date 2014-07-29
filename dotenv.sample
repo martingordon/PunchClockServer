@@ -9,6 +9,7 @@ PARSE_DEV_API_KEY=xxx
 
 AUTH_USER=xxx
 AUTH_PASSWORD=xxx
+AUTH_TOKEN=xxx
 
 SLACK_TOKEN=xxx
 SLACK_URL=https://xxx.slack.com
@@ -18,3 +19,5 @@ RSS_ABOUT=http://xxx.herokuapp.com
 RSS_LINK=http://xxx.herokuapp.com
 
 TZ=America/New_York
+
+
