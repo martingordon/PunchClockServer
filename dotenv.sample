@@ -14,7 +14,7 @@ SLACK_TOKEN=xxx
 SLACK_URL=https://xxx.slack.com
 
 RSS_AUTHOR=xxx
-RSS_ABOUT="http://xxx.herokuapp.com"
-RSS_LINK="http://xxx.herokuapp.com"
+RSS_ABOUT=http://xxx.herokuapp.com
+RSS_LINK=http://xxx.herokuapp.com
 
-TZ="America/New_York"
+TZ=America/New_York
