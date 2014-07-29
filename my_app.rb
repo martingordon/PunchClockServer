@@ -220,15 +220,13 @@ get '/ins/:name.xml' do
       ins = sender.ins_dataset.where { Sequel.function(:date_part, "hour", date) <= before }.reverse_order(:date)
     end
 
-    in_block = ->(in_status) {
+    maker.channel.updated = ins.first.nil? ? nil : ins.first.date
+    ins.each do |in_status|
       maker.items.new_item do |item|
         item.title = in_status.status
         item.updated = in_status.date
       end
-    }
-
-    maker.channel.updated = ins.first.nil? ? nil : ins.first.date
-    ins.each(&:in_block)
+    end
   end
 
   rss.to_s
@@ -262,15 +260,13 @@ get '/outs/:name.xml' do
       outs = sender.outs_dataset.where { Sequel.function(:date_part, "hour", date) >= after }.reverse_order(:date)
     end
 
-    in_block = ->(in_status) {
+    maker.channel.updated = outs.first.nil? ? nil : outs.first.date
+    outs.each do |in_status|
       maker.items.new_item do |item|
         item.title = in_status.status
         item.updated = in_status.date
       end
-    }
-
-    maker.channel.updated = outs.first.nil? ? nil : outs.first.date
-    outs.each(&:in_block)
+    end
   end
 
   rss.to_s
