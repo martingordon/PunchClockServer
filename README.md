@@ -1,7 +1,13 @@
 PunchClock Server
 =======
 
-Provides a set of endpoints for the [PunchClock](https://github.com/panicinc/PunchClock) iOS app as well as a [Status Board](https://panic.com/statusboard/)-compatible In/Out panel.
+Provides a set of endpoints for the [PunchClock](https://github.com/martingordon/PunchClock) iOS app as well as a [Status Board](https://panic.com/statusboard/)-compatible In/Out panel.
+
+This fork features several changes from [Panic's](https://github.com/martingordon/PunchClock) version:
+
+- Uses Parse instead of ZeroPush for push notifications.
+- Tracks status changes in a new `status_changes` table.
+- Provides RSS feeds for in/out status changes for each user.
 
 Setup
 -----
@@ -19,10 +25,15 @@ To run the server locally run `foreman start`
 Put your people images in the public folder and name them the same as the names used in the app.
 
 
+#### RSS Feeds
+Each user is given a pair of RSS feeds. The feeds are accessible at `/rss/ins/#{lowercase_user_name}.xml?token=#{token}` and `/rss/outs/#{lowercase_user_name}.xml?token=#{token}`.
+
+The token parameter must be provided and should match the `AUTH_TOKEN` environment variable. Additionally, the In feed accepts an optional "before" parameter to only show entries before a certain hour. The Out feed accepts an optional "after" parameter to only show entries after a certain hour. Both parameters must be in 24-hour time.
+
 Contributing
 ------------
 
-Feel free to fork and send us pull requests
+Feel free to fork and send us pull requests.
 
 Bug Reporting
 -------------
