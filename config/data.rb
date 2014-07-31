@@ -44,7 +44,7 @@ class Person < Sequel::Model
       outs = self.outs_dataset.where { Sequel.function(:date_part, "hour", date) >= after_hour }.reverse_order(:date)
     end
 
-    _status_feed("Departure Feed for #{self.name.titleize}", "Departure Feed for #{self.name.titleize}", ins)
+    _status_feed("Departure Feed for #{self.name.titleize}", "Departure Feed for #{self.name.titleize}", outs)
   end
 
   private
