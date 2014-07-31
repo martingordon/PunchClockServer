@@ -262,40 +262,8 @@ class Public < PunchClock
 
     halt 400 unless params[:token] == ENV["AUTH_TOKEN"]
 
-    low_name = params[:name].downcase
-
-    sender = Person.first(:name => low_name)
-
-    RSS::Rss::NSPOOL.delete("content")
-    RSS::Rss::NSPOOL.delete("trackback")
-    RSS::Rss::NSPOOL.delete("itunes")
-
-    rss = RSS::Maker.make("2.0") do |maker|
-      maker.channel.title = "Arrival Feed for #{sender.name.titleize}"
-      maker.channel.description = "Arrival Feed for #{sender.name.titleize}"
-
-      maker.channel.author = ENV["RSS_AUTHOR"]
-      maker.channel.about = ENV["RSS_ABOUT"]
-      maker.channel.link = ENV["RSS_LINK"]
-
-      ins = sender.ins_dataset.reverse_order(:date)
-
-      if !params[:before].nil? or params[:before] == ""
-        before = params[:before].to_i
-        ins = sender.ins_dataset.where { Sequel.function(:date_part, "hour", date) <= before }.reverse_order(:date)
-      end
-
-      maker.channel.updated = ins.first.nil? ? nil : ins.first.date
-      ins.each do |in_status|
-        maker.items.new_item do |item|
-          item.title = in_status.status
-          item.updated = in_status.date
-          item.link = ENV["RSS_LINK"]
-        end
-      end
-    end
-
-    rss.to_s
+    person = Person.first(name: params[:name].downcase)
+    person.out_feed(params[:after_hour]).to_s
   end
 
   get '/outs/:name.xml' do
@@ -304,39 +272,7 @@ class Public < PunchClock
 
     halt 400 unless params[:token] == ENV["AUTH_TOKEN"]
 
-    low_name = params[:name].downcase
-
-    sender = Person.first(:name => low_name)
-
-    RSS::Rss::NSPOOL.delete("content")
-    RSS::Rss::NSPOOL.delete("trackback")
-    RSS::Rss::NSPOOL.delete("itunes")
-
-    rss = RSS::Maker.make("2.0") do |maker|
-      maker.channel.title = "Arrival Feed for #{sender.name.titleize}"
-      maker.channel.description = "Arrival Feed for #{sender.name.titleize}"
-
-      maker.channel.author = ENV["RSS_AUTHOR"]
-      maker.channel.about = ENV["RSS_ABOUT"]
-      maker.channel.link = ENV["RSS_LINK"]
-
-      outs = sender.outs_dataset.reverse_order(:date)
-
-      if !params[:after].nil? or params[:after] == ""
-        after = params[:after].to_i
-        outs = sender.outs_dataset.where { Sequel.function(:date_part, "hour", date) >= after }.reverse_order(:date)
-      end
-
-      maker.channel.updated = outs.first.nil? ? nil : outs.first.date
-      outs.each do |in_status|
-        maker.items.new_item do |item|
-          item.title = in_status.status
-          item.updated = in_status.date
-          item.link = ENV["RSS_LINK"]
-        end
-      end
-    end
-
-    rss.to_s
+    person = Person.first(name: params[:name].downcase)
+    person.out_feed(params[:after_hour]).to_s
   end
 end
