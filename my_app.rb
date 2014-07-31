@@ -14,13 +14,6 @@ STATUS_ALREADY_WATCHED = 3
 
 MINIMUM_VERSION = 73
 
-class String
-  def titleize
-    arr = self.split(" ")
-    arr.each { |w| w.capitalize! }.join(" ")
-  end
-end
-
 class PunchClock < Sinatra::Base
   def require_params(*parameters)
     parameters.each do |param|
