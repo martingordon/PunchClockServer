@@ -263,7 +263,7 @@ class Public < PunchClock
     halt 400 unless params[:token] == ENV["AUTH_TOKEN"]
 
     person = Person.first(name: params[:name].downcase)
-    person.out_feed(params[:after_hour]).to_s
+    person.in_feed(params[:after_hour]).to_s
   end
 
   get '/outs/:name.xml' do
