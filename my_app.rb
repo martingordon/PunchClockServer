@@ -141,7 +141,7 @@ class Protected < PunchClock
 
           recipient_ids.each do |id|
             push = Parse::Push.new({
-              alert: "#{sender.name.titleize} is #{params[:status]}",
+              alert: "#{person.name.titleize} is #{params[:status]}",
               sound: "status.caf",
               badge: ""
             })
